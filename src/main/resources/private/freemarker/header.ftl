@@ -1,7 +1,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="/styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judges by Andrew Schwartz</title>
+    <title>GWHS Makerspace</title>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -13,7 +13,8 @@
 <nav>
     <ul>
         <li><a href="/index.html">Home</a></li>
-        <li><a href="/add">Add a Judge</a></li>
+        <li><a href="/#">Other Item</a></li>
+        <li><a href="/#">Item 3</a></li>
         <li class="right"><a href="/logout">Log out</a></li>
     </ul>
 </nav>

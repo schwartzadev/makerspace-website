@@ -12,10 +12,6 @@ import java.util.Map;
  * Created by Andrew Schwartz on 11/23/17.
  */
 public class Template {
-    public String addView() {
-        return noMap("src/main/resources/private/freemarker/add.ftl");
-    }
-
     public String login() {
         return noMap("src/main/resources/private/freemarker/login.ftl");
     }

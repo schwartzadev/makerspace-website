@@ -33,7 +33,6 @@ public class Endpoints {
     }
 
     private void registerEndpoints() {
-        getApp().get("/add", this::addView);
 //        getApp().get("/delete/:id", this::deleteNote);
 
         getApp().get("index.html", this::index);
@@ -56,10 +55,6 @@ public class Endpoints {
 
     private void registerPage(Context ctx) {
         ctx.html(new Template().register());
-    }
-
-    private void addView(Context context) {
-        context.html(new Template().addView());
     }
 
     private void logOut(Context context) {
