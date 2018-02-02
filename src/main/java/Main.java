@@ -1,12 +1,8 @@
 import java.util.Timer;
 
 /**
- * Created by Andrew Schwartz on 7/30/17.
+ * Created by Andrew Schwartz on 2/1/18.
  */
-
-
-// IN ORDER TO RUN:
-// START MYSQL
 
 public class Main {
     public static void main(String[] args) {
