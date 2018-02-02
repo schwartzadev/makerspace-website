@@ -6,10 +6,10 @@ import java.util.Timer;
 
 public class Main {
     public static void main(String[] args) {
-        DatabaseOld database = new DatabaseOld(new SimpleConfig());
-        new Endpoints(database);
+        Database database = new Database(new SimpleConfig());
+//        new Endpoints(database);
 
         Timer timer = new Timer();
-        timer.schedule(database.new Ping(), 0, 5000);
+//        timer.schedule(database.new Ping(), 0, 5000);
     }
 }
