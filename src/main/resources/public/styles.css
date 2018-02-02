@@ -1,0 +1,191 @@
+/***** INDEX *****/
+
+#judge-list {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 1.15em;
+    border-collapse: collapse;
+    width: 100%;
+    color: #0A1019;
+}
+
+#judge-list thead {
+    background-color: #67C1D3;
+    color: white;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#judge-list tr {
+    cursor: pointer
+}
+
+#judge-list td, #judge-list th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#judge-list tbody tr:nth-child(even){background-color: #f2f2f2;}
+
+#judge-list tbody tr:hover {background-color: #ddd;}
+
+/***** NAV *****/
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+nav li {
+    float: left;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 1em;
+    text-decoration: none;
+}
+
+nav li.right {
+    float: right;
+}
+
+nav li:hover {
+    background-color: #111;
+}
+
+nav {
+    margin-bottom: 2em;
+}
+
+div#container {
+    margin: 1.5em;
+}
+
+/***** ADD PAGE *****/
+
+
+form#form-root div {
+    margin: .7em 0;
+}
+
+/***** DETAIL VIEW *****/
+h1.name {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 4em;
+    margin-bottom: .125em;
+    display: inline-block;
+}
+@media only screen and (min-width: 700px) {
+    #wrapper {
+        padding: 10px;
+        text-align: center;
+    }
+
+    #floating {
+        position: relative;
+        display: inline-block;
+        width: 0;
+        height: 0;
+        vertical-align: top;
+    }
+
+    #sidebar {
+        margin-top: 40px;
+        display: inline-block;
+        position: absolute;
+        width: 100px;
+        padding-top: 10px;
+        padding-left: 15px;
+    }
+}
+
+
+div.toolbar {
+  display: flex;
+  justify-content: center;
+}
+
+div.toolbar ul {
+  display: flex;
+  flex-flow: row wrap;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+div.toolbar ul li a {
+  display: block;
+  color: blue;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+div.toolbar ul li a:hover {
+    text-decoration: underline;
+}
+
+.sql-output {
+    white-space: pre-wrap;
+}
+
+.counter {
+    text-align: center;
+}
+
+.center-text {
+    text-align: center;
+}
+
+/***** COLUMNS *****/
+
+.row::before,
+.row::after {
+  display: table;
+  content: " ";
+  clear: both;
+}
+
+.one,
+.one-third,
+.two-thirds,
+.one-fourth,
+.one-half {
+  width: 100%;
+}
+
+.sampleClass {float:left;}
+@media only screen and (min-width: 700px) {
+    .full {
+        width: 100%;
+    }
+    .one-half {
+        width: calc(96% / 2); /*2 columns, 100-2*2 = 96*/
+    }
+    .one-third {
+        width: calc(94% / 3); /*3 columns, 100-2*3 = 94*/
+    }
+    .one-fourth {
+        width: calc(92% / 4); /*4 columns, 100-2*4 = 92*/
+    }
+    .two-thirds {
+        width: calc(96% / 3 * 2); /*2 columns, 100-2*2 = 96*/
+    }
+    .column {
+        float: left;
+        margin-right: calc(100% / 50);
+    }
+    .sampleClass {float:none;} /* for jquery */
+
+    .row {
+        padding: 0 2em;
+    }
+}
