@@ -6,7 +6,7 @@ import java.util.Timer;
 
 public class Main {
     public static void main(String[] args) {
-        Database database = new Database(new SimpleConfig());
+        DatabaseOld database = new DatabaseOld(new SimpleConfig());
         new Endpoints(database);
 
         Timer timer = new Timer();

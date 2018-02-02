@@ -10,11 +10,11 @@ import org.owasp.html.Sanitizers;
  */
 public class Endpoints {
     private Javalin app;
-    private Database db;
+    private DatabaseOld db;
     private PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.FORMATTING);
 
 
-    public Endpoints(Database db) {
+    public Endpoints(DatabaseOld db) {
         this.db = db;
         Javalin newApp = io.javalin.Javalin.create()
                 .port(getHerokuAssignedPort())
@@ -127,7 +127,7 @@ public class Endpoints {
         this.app = app;
     }
 
-    public Database getDb() {
+    public DatabaseOld getDb() {
         return db;
     }
 
