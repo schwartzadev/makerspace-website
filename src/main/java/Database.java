@@ -1,11 +1,3 @@
-import org.jooq.DSLContext;
-import org.jooq.Record;
-
-import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
-
 /**
  * Created by Andrew Schwartz on 2/1/18.
  */
@@ -13,7 +5,9 @@ import org.jooq.impl.DSL;
 import java.sql.*;
 import java.util.TimerTask;
 
-import static gwhs.generated.Tables.USERS;
+import gwhs.generated.Tables;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 
 public class Database {
     private String dbDriverClassName;
@@ -28,7 +22,7 @@ public class Database {
         this.setDbUrl(config.getDbUrl());
     }
 
-    private Connection makeConnection() throws SQLException{
+    public Connection makeConnection() throws SQLException{
         return DriverManager.getConnection(this.getDbUrl(), this.getDbUsername(), this.getDbPassword());
     }
 
@@ -60,23 +54,18 @@ public class Database {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
-
-    void test() {
-        // Connection is the only JDBC resource that we need
-        // PreparedStatement and ResultSet are handled by jOOQ, internally
-        try (DSLContext create = DSL.using(this.makeConnection(), SQLDialect.MYSQL)) {
-            Result<Record> result = create.select().from(USERS).fetch();
-            System.out.println(result);
-            create.close();
-        }
-
-        // For the sake of this tutorial, let's keep exception handling simple
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    void temp() {
+//        try (DSLContext create = DSL.using(this.makeConnection(), SQLDialect.MYSQL)) {
+//            Record1<Integer> maxId = create.select(Tables.CERTIFICATION.ID)
+//                    .from(Tables.CERTIFICATION)
+//                    .orderBy(Tables.CERTIFICATION.ID.desc())
+//                    .limit(1)
+//                    .fetchOne();
+//            System.out.println((int)maxId.get(0)+1);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("end");
     }
 
     public String getDbDriverClassName() {
