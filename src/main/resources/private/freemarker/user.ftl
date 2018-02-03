@@ -8,7 +8,7 @@
             <li>${cert.getType()} (Level ${cert.getLevel()})</li>
         </#list>
     </ul>
-    <h3>Member Since ${item2.getCreatedDate()}</h3>
+    <h3>Member Since ${item2.getShortCreatedDate()}</h3>
 </div>
 <#include "footer.ftl">
 <script type="text/javascript" src="/main.js"></script>

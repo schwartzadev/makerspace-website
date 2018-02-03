@@ -16,6 +16,10 @@
         <br>
         <input id="username" type="text" placeholder="johnny200" name="username" required>
         <br>
+        <label><b>Email</b></label>
+        <br>
+        <input id="email" type="text" placeholder="johnnys200@jon.com" name="email" required>
+        <br>
         <label><b>Password (6+ chars)</b></label>
         <br>
         <input type="password" placeholder="Enter Password" name="pwd" id="first-pass" required>

@@ -1,6 +1,7 @@
 import gwhs.generated.Tables;
 import gwhs.generated.tables.pojos.Certification;
 import gwhs.generated.tables.pojos.User;
+import gwhs.generated.tables.records.UserRecord;
 import io.javalin.Context;
 import io.javalin.Javalin;
 import javafx.scene.control.Tab;
@@ -10,12 +11,18 @@ import org.jooq.impl.DSL;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+import static gwhs.generated.tables.User.USER;
 
 
 /**
@@ -50,11 +57,12 @@ public class Endpoints {
         getApp().get("index.html", this::index);
 
         getApp().get("/", this::rootRedirect);
+        getApp().get("/landing", this::landingPage);
         getApp().get("/user/:id", this::userPage);
         getApp().get("/login", this::loginPage);
 //        getApp().post("/sign-in", this::loginHandler);
         getApp().get("/register", this::registerPage);
-//        getApp().post("/signup", this::registerHandler);
+        getApp().post("/signup", this::registerHandler);
 //        getApp().get("/logout", this::logOut);
     }
 
@@ -63,13 +71,21 @@ public class Endpoints {
             List<User> users = create.select(Tables.USER.ID, Tables.USER.FIRSTNAME, Tables.USER.LASTNAME, Tables.USER.USERNAME, Tables.USER.EMAIL, Tables.USER.LOGIN_DATE)
                     .from(Tables.USER)
                     .orderBy(Tables.USER.CREATED_DATE.desc())
-                    .fetch().into(User.class);
+                    .fetch().into(UserNew.class);
             List<Object> templateList = new ArrayList<>();
             templateList.add(users);
             ctx.html(new Template().list(templateList, "src/main/resources/private/freemarker/index.ftl"));
         } catch (SQLException e) {
             e.printStackTrace();
             ctx.status(500);
+        }
+    }
+
+    private void landingPage(Context ctx) {
+        try {
+            ctx.html(new String(Files.readAllBytes(Paths.get("src/main/resources/public/landing.html"))));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -103,11 +119,11 @@ public class Endpoints {
                             .fetch().into(Certification.class)
             );
             try {
-                User user = create.select()
+                UserNew user = create.select()
                         .from(Tables.USER)
                         .where(Tables.USER.ID.eq(userId))
                         .limit(1)
-                        .fetchOne().into(User.class); // is null if the user id doesn't belong to a user
+                        .fetchOne().into(UserNew.class); // is null if the user id doesn't belong to a user
                 templateList.add(user);
                 ctx.html(new Template().list(templateList, "src/main/resources/private/freemarker/user.ftl"));
             } catch (NullPointerException npe) {
@@ -144,27 +160,59 @@ public class Endpoints {
 //        }
 //    }
 //
-//    private void registerHandler(Context ctx) {
-//        String first = ctx.formParam("first");
-//        String last = ctx.formParam("last");
-//        String pass = ctx.formParam("pwd");
-//        String user = ctx.formParam("username");
-//        if (pass.length() >= 6 ||
-//                pass.length() < 255 ||
-//                user.length() < 255 ||
-//                user.length() >= 4 ||
-//                getDb().getUserByName(ctx.formParam("username")) != null) {
-//            getDb().addUser(new UserOld(getDb().getMaxID("users") + 1, first, last, user, pass));
-//            ctx.status(200);
-//            ctx.redirect("/login");
-//        } else {
-//            ctx.redirect("/register");
+    private void registerHandler(Context ctx) {
+        UserNew user = new UserNew();
+
+        user.setEmail(ctx.formParam("email")); // TODO ASAP FIX THE EMAIL ISSUES
+//        Pattern emailCheck = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+//        if (!emailCheck.matcher(user.getEmail()).find()) { // TODO add client-side js email regex check
+//            // bad email
+//            ctx.status(400); // TODO update with user feedback that email is invalid
 //        }
-//    }
+
+        user.setPassword(ctx.formParam("pwd"));
+        user.setUsername(ctx.formParam("username"));
+        if (user.getPassword().length() >= 6 ||
+                user.getPassword().length() < 255 ||
+                user.getUsername().length() < 255 ||
+                user.getUsername().length() >= 4) {
+            try (DSLContext create = DSL.using(this.db.makeConnection(), SQLDialect.MYSQL)) {
+                List<Integer> s = create.select(Tables.USER.ID)
+                        .from(Tables.USER)
+                        .where(Tables.USER.USERNAME.eq(user.getUsername()))
+                        .fetch(USER.ID);
+                if (s.size() != 0) { // if username exists
+                    System.out.println("username exists");
+                    ctx.status(400); // TODO update with user feedback that name already exists
+                }
+
+                user.setFirstname(ctx.formParam("first"));
+                user.setLastname(ctx.formParam("last"));
+                user.hashPassword();
+                user.setArchived(new Byte("0"));
+                user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                Record max = create.select(USER.ID.max())
+                        .from(USER)
+                        .fetchOne();
+                user.setId((int)max.get(0)+1);
+                System.out.println(user);
+//                // insert into DB:
+//                UserRecord userRecord = create.newRecord(USER, user);
+//                create.executeInsert(userRecord);
+                ctx.status(200);
+                ctx.redirect("/login");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ctx.redirect("/register");
+        }
+    }
 
     private void rootRedirect(Context ctx) {
         ctx.status(302);
-        ctx.redirect("/index.html");
+        // TODO add cookie check (if logged in, redirect to main page, if not, redirect to landing
+        ctx.redirect("/landing");
     }
 
     public void setApp(Javalin app) {
