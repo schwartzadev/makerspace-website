@@ -141,6 +141,13 @@ div.toolbar ul li a:hover {
     text-align: center;
 }
 
+/**** FOOTER *****/
+footer#footer {
+    text-align: center;
+    text-size: 10px;
+    text-colot: #212121;
+}
+
 .center-text {
     text-align: center;
 }
