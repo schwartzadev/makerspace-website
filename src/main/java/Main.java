@@ -10,6 +10,8 @@ public class Main {
         new Endpoints(database);
 
         Timer timer = new Timer();
-        timer.schedule(database.new Ping(), 0, 5000);
+        timer.schedule(
+                database.new Ping(), 0, 60*1000
+        ); // ping the database to maintain connection every minute
     }
 }

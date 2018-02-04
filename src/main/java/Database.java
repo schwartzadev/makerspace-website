@@ -38,7 +38,7 @@ public class Database {
                 conn.prepareStatement("select 1;").executeQuery();
             } catch (SQLException e) {
                 e.printStackTrace();
-                System.out.println("[DatabaseOld.ping()] failed");
+                System.out.println("[Database.ping()] failed");
             } finally {
                 try {
                     if (conn != null) {
@@ -47,25 +47,11 @@ public class Database {
                         System.out.println("[DatabaseOld.ping()] connection is null");
                     }
                 } catch (SQLException e) {
-                    System.out.println("[DatabaseOld.ping()] failed");
+                    System.out.println("[Database.ping()] failed");
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-    void temp() {
-//        try (DSLContext create = DSL.using(this.makeConnection(), SQLDialect.MYSQL)) {
-//            Record1<Integer> maxId = create.select(Tables.CERTIFICATION.ID)
-//                    .from(Tables.CERTIFICATION)
-//                    .orderBy(Tables.CERTIFICATION.ID.desc())
-//                    .limit(1)
-//                    .fetchOne();
-//            System.out.println((int)maxId.get(0)+1);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("end");
     }
 
     public String getDbDriverClassName() {

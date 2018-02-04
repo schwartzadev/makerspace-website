@@ -3,7 +3,7 @@
 <h1>Log In</h1>
 
 <div class="login">
-    <form action="/sign-in" method="post">
+    <form action="/login" method="post">
         <br>
         <label><b>Username</b></label>
         <br>

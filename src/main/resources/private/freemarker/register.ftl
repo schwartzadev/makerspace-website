@@ -3,7 +3,7 @@
 <h1>Sign up!</h1>
 <div class="container">
     <script type="text/javascript" src="/login.js"></script>
-    <form action="/signup" method="post" onsubmit="return checkRegister()">
+    <form action="/register" method="post" onsubmit="return checkRegister()">
         <label><b>First Name</b></label>
         <br>
         <input id="first" type="text" placeholder="John" name="first" required>

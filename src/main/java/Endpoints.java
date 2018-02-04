@@ -1,13 +1,12 @@
 import gwhs.generated.Tables;
-import gwhs.generated.tables.pojos.Certification;
 import gwhs.generated.tables.pojos.User;
 import gwhs.generated.tables.records.UserRecord;
 import io.javalin.Context;
 import io.javalin.Javalin;
-import javafx.scene.control.Tab;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.jooq.*;
 import org.jooq.impl.DSL;
+import org.mindrot.jbcrypt.BCrypt;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
@@ -17,11 +16,10 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import static gwhs.generated.tables.Logins.LOGINS;
 import static gwhs.generated.tables.User.USER;
 
 
@@ -60,9 +58,9 @@ public class Endpoints {
         getApp().get("/landing", this::landingPage);
         getApp().get("/user/:id", this::userPage);
         getApp().get("/login", this::loginPage);
-//        getApp().post("/sign-in", this::loginHandler);
+        getApp().post("/login", this::loginHandler);
         getApp().get("/register", this::registerPage);
-        getApp().post("/signup", this::registerHandler);
+        getApp().post("/register", this::registerHandler);
 //        getApp().get("/logout", this::logOut);
     }
 
@@ -113,10 +111,10 @@ public class Endpoints {
 //            FROM user
 //            INNER JOIN certification ON user.id = certification.user_id; // TODO implement the below in one query, modelled on this line and the two above it
             templateList.add(
-                    create.select(Tables.CERTIFICATION.TYPE, Tables.CERTIFICATION.LEVEL)
-                            .from(Tables.CERTIFICATION)
-                            .where(Tables.CERTIFICATION.USER_ID.eq(userId))
-                            .fetch().into(Certification.class)
+                    create.select(Tables.HOLDERS.TYPE, Tables.HOLDERS.LEVEL)
+                            .from(Tables.HOLDERS)
+                            .where(Tables.HOLDERS.USER_ID.eq(userId))
+                            .fetch().into(gwhs.generated.tables.pojos.Holders.class)
             );
             try {
                 UserNew user = create.select()
@@ -141,25 +139,52 @@ public class Endpoints {
 
 //    private void logOut(Context context) {
 //        context.status(202);
-//        getDb().deleteLogin(getDb().checkCookie(context.cookie("com.aschwartz.judgeprofiles")));
-//        context.removeCookie("com.aschwartz.judgeprofiles");
+//        getDb().deleteLogin(getDb().checkCookie(context.cookie("gwhs.makerspace")));
+//        context.removeCookie("gwhs.makerspace");
 //        context.redirect("/login");
 //    }
-//
-//    private void loginHandler(Context ctx) {
-//        UserOld user = getDb().getUserByName(ctx.formParam("username"));
-//        if (BCrypt.checkpw(ctx.formParam("pwd"), user.getPassword())) {
-////            correct password
-//            ctx.cookie("com.aschwartz.judgeprofiles", getDb().saveLogin(user));
-//            ctx.redirect("/index.html");
-//            ctx.status(200);
-//        }
-//        else {
-//            ctx.status(401);
-//            ctx.redirect("/login");
-//        }
-//    }
-//
+
+    private void loginHandler(Context ctx) {
+        try (DSLContext create = DSL.using(this.db.makeConnection(), SQLDialect.MYSQL)) {
+            UserNew attemptedLogin = create.select(USER.USERNAME, USER.PASSWORD, USER.ID)
+                    .from(USER)
+                    .where(USER.USERNAME.eq(ctx.formParam("username")))
+                    .limit(1)
+                    .fetchOne().into(UserNew.class);
+            if (BCrypt.checkpw(ctx.formParam("pwd"), attemptedLogin.getPassword())) {
+//            correct password
+                int loginId = (int) create.select(LOGINS.ID.max())
+                        .from(LOGINS)
+                        .fetchOne().get(0) + 1;
+                gwhs.generated.tables.pojos.Logins login = new gwhs.generated.tables.pojos.Logins(
+                        loginId,
+                        attemptedLogin.getId(),
+                        RandomStringUtils.random(50, true, true),
+                        BCrypt.hashpw(
+                                attemptedLogin.getUsername(),BCrypt.gensalt()
+                        ),
+                        new Timestamp(System.currentTimeMillis())
+                );
+
+                create.executeInsert(
+                        create.newRecord(LOGINS, login)
+                );
+
+                ctx.cookie("gwhs.makerspace", (login.getRandom()+login.getNameHash()));
+                ctx.redirect("/index.html");
+                ctx.status(200);
+            }
+            else {
+                ctx.status(401);
+                ctx.redirect("/login");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500);
+            ctx.redirect("/login");
+        }
+    }
+
     private void registerHandler(Context ctx) {
         UserNew user = new UserNew();
 
