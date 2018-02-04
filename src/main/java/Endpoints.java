@@ -172,15 +172,20 @@ public class Endpoints {
 
     private void logOut(Context context) {
         context.status(202);
-        try (DSLContext create = DSL.using(this.db.makeConnection(), SQLDialect.MYSQL)) {
-            create.delete(LOGINS)
-                    .where(LOGINS.ID.eq(checkLogin(context.cookie("gwhs.makerspace")).getId()))
-                    .execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        UserNew loggedInUser = checkLogin(context.cookie("gwhs.makerspace"));
+        if (loggedInUser == null) {
+            context.redirect("/");
+        } else {
+            try (DSLContext create = DSL.using(this.db.makeConnection(), SQLDialect.MYSQL)) {
+                create.delete(LOGINS)
+                        .where(LOGINS.ID.eq(loggedInUser.getId()))
+                        .execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            context.removeCookie("gwhs.makerspace");
+            context.redirect("/");
         }
-        context.removeCookie("gwhs.makerspace");
-        context.redirect("/login");
     }
 
     private void loginHandler(Context ctx) {
@@ -277,8 +282,11 @@ public class Endpoints {
 
     private void rootRedirect(Context ctx) {
         ctx.status(302);
-        // TODO add cookie check (if logged in, redirect to main page, if not, redirect to landing
-        ctx.redirect("/landing");
+        if (checkLogin(ctx.cookie("gwhs.makerspace")) != null) {
+            ctx.redirect("/index.html");
+        } else {
+            ctx.redirect("/landing");
+        }
     }
 
     public void setApp(Javalin app) {
