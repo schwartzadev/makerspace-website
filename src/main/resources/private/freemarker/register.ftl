@@ -18,7 +18,7 @@
         <br>
         <label><b>Email</b></label>
         <br>
-        <input id="email" type="text" placeholder="johnnys200@jon.com" name="email" required>
+        <input type="email" placeholder="johnnys200@jon.com" name="email" id="email" required>
         <br>
         <label><b>Password (6+ chars)</b></label>
         <br>

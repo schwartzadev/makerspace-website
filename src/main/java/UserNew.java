@@ -9,7 +9,6 @@ import java.util.Date;
 public class UserNew extends gwhs.generated.tables.pojos.User {
 
     public void hashPassword() {
-        System.out.println(this.getPassword());
         this.setPassword(BCrypt.hashpw(this.getPassword(), BCrypt.gensalt()));
     }
 

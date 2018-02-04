@@ -16,7 +16,11 @@
                 <td>${user.getLastname()}</td>
                 <td>${user.getUsername()}</td>
                 <td>${user.getEmail()}</td>
+                <#if user.getLoginDate()??>
                 <td>${user.getLoginDate()}</td>
+                <#else>
+                <td>(no recorded logins)</td>
+                </#if>
                 <td><a href="/user/${user.getId()}">More Details...</a></td>
             </tr>
         </#list>

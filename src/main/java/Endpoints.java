@@ -163,12 +163,13 @@ public class Endpoints {
     private void registerHandler(Context ctx) {
         UserNew user = new UserNew();
 
-        user.setEmail(ctx.formParam("email")); // TODO ASAP FIX THE EMAIL ISSUES
-//        Pattern emailCheck = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-//        if (!emailCheck.matcher(user.getEmail()).find()) { // TODO add client-side js email regex check
-//            // bad email
-//            ctx.status(400); // TODO update with user feedback that email is invalid
-//        }
+        user.setEmail(ctx.formParam("email"));
+        Pattern emailCheck = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        if (!emailCheck.matcher(user.getEmail()).find()) { // TODO add client-side js email regex check
+            // bad email
+            ctx.status(400); // TODO update with user feedback that email is invalid
+            ctx.redirect("/register");
+        }
 
         user.setPassword(ctx.formParam("pwd"));
         user.setUsername(ctx.formParam("username"));
@@ -184,23 +185,23 @@ public class Endpoints {
                 if (s.size() != 0) { // if username exists
                     System.out.println("username exists");
                     ctx.status(400); // TODO update with user feedback that name already exists
+                    ctx.redirect("/register");
+                } else {
+                    user.setFirstname(ctx.formParam("first"));
+                    user.setLastname(ctx.formParam("last"));
+                    user.hashPassword();
+                    user.setArchived(new Byte("0"));
+                    user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+                    Record max = create.select(USER.ID.max())
+                            .from(USER)
+                            .fetchOne();
+                    user.setId((int) max.get(0) + 1);
+                    // insert into DB:
+                    UserRecord userRecord = create.newRecord(USER, user);
+                    create.executeInsert(userRecord);
+                    ctx.status(200);
+                    ctx.redirect("/login");
                 }
-
-                user.setFirstname(ctx.formParam("first"));
-                user.setLastname(ctx.formParam("last"));
-                user.hashPassword();
-                user.setArchived(new Byte("0"));
-                user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
-                Record max = create.select(USER.ID.max())
-                        .from(USER)
-                        .fetchOne();
-                user.setId((int)max.get(0)+1);
-                System.out.println(user);
-//                // insert into DB:
-//                UserRecord userRecord = create.newRecord(USER, user);
-//                create.executeInsert(userRecord);
-                ctx.status(200);
-                ctx.redirect("/login");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
