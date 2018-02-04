@@ -9,6 +9,10 @@
         </#list>
     </ul>
     <h3>Member Since ${item2.getShortCreatedDate()}</h3>
+    <#if item4>
+        <h1>THIS IS YOUR PAGE--DO WHAT YOU WISH</h1>
+        <!--<a href="/req-cert"><h2>Request Certification</h2></a>-->
+    </#if>
 </div>
 <#include "footer.ftl">
 <script type="text/javascript" src="/main.js"></script>
